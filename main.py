@@ -1,18 +1,20 @@
 from collections import deque
-from search import BFS, GreedyBFS
+from search import BFS, GreedyBFS, AStar
+import time
 
-START = "South Brunswick, New Jersey"
-TARGET = "Denver Broncos"
+START = "Paris"
+TARGET = "Hydro Flask"
 
 def runner():
-    searcher = GreedyBFS()
-    node = searcher.shorthest_path(START, TARGET)
+    searcher = AStar()
+    start_t = time.time()
+    node = searcher.find_path(START, TARGET)
     path = deque()
     while node:
         path.appendleft(node.state)
         node = node.parent
 
-    print("\nFound Solution:")
+    print(f"\nFound Solution in {time.time() - start_t} seconds:")
     print(" -> ".join(path))
 
 if __name__ == "__main__":

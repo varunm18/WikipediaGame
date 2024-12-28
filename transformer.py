@@ -13,7 +13,7 @@ def get_all_internal_links(title):
     base_url = "https://en.wikipedia.org/w/api.php"
     params = {
         "action": "query",
-        "titles": title if '%' in title else quote(title),
+        "titles": title,
         "generator": "links",
         "gpllimit": "max",
         "gplnamespace": "0",
@@ -22,7 +22,7 @@ def get_all_internal_links(title):
     existing_links = []
     while True:
         response = requests.get(base_url, params=params).json()
-        
+
         pages = response.get("query", {}).get("pages", {})
 
         existing_links.extend(page["title"] for page in pages.values() if "pageid" in page and page["pageid"] >= 0 )
@@ -103,20 +103,20 @@ link_embeddings = model.encode(summaries)
 goal_embedding = goal_embedding / np.linalg.norm(goal_embedding)
 link_embeddings = link_embeddings / np.linalg.norm(link_embeddings, axis=1, keepdims=True)
 
-similarities = np.dot(link_embeddings, goal_embedding)
-link_similarity_pairs = list(zip(links, similarities))
+# similarities = np.dot(link_embeddings, goal_embedding)
+# link_similarity_pairs = list(zip(links, similarities))
 
-# # Sort the list by similarity in descending order
-sorted_links = sorted(link_similarity_pairs, key=lambda x: x[1], reverse=True)
+# # # Sort the list by similarity in descending order
+# sorted_links = sorted(link_similarity_pairs, key=lambda x: x[1], reverse=True)
 
-# dimension = link_embeddings.shape[1]
-# index = faiss.IndexFlatIP(dimension)
+dimension = link_embeddings.shape[1]
+index = faiss.IndexFlatIP(dimension)
 
-# index.add(link_embeddings)
-# _, top_indices = index.search(goal_embedding.reshape(1, -1), 100)
-# top_links = [links[i] for i in top_indices[0]]
-with open("ranks.txt", "w") as f:
-    for link, similarity in sorted_links[:top_n]:  # Use `top_n` if you want the top results
-        f.write(f"{link}: {similarity}\n")
+index.add(link_embeddings)
+distances, top_indices = index.search(goal_embedding.reshape(1, -1), 100)
+top_links = [links[i] for i in top_indices[0]]
+# with open("ranks.txt", "w") as f:
+#     for link, similarity in sorted_links[:top_n]:  # Use `top_n` if you want the top results
+#         f.write(f"{link}: {similarity}\n")
 
 print(time.time() - start_t)
