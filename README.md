@@ -10,7 +10,7 @@ Search algorithms that find a path between two Wikipedia pages through links on 
 #### Greedy BFS-
 * Uses Heap as priority queue (heapq) for frontier
 * Searches by heuristic function using [BAAI/bge-base-en-v1.5](https://huggingface.co/BAAI/bge-base-en-v1.5) Transformer model from Hugging Face through [SentenceTransformer](https://sbert.net) module
-  * Finds Cosine Similarity between Target Embedding and all Link Embeddings
+  * Finds Cosine Similarity between Target Embedding Summary and all Link Embeddings Summaries (Summaries given by [Wikipedia](https://wikipedia.readthedocs.io/en/latest/) module)
 * Searches by Highest Cosine Similarity
 #### A*-
 * Uses Heap as priority queue (heapq) for frontier
