@@ -155,7 +155,7 @@ class GreedyBFS(Search):
         return list(zip(similarities[0], [links[i] for i in top_indices[0]]))
 
     def find_path(self, source, target):
-        self.frontier.add(self.Node(source.title(), None))
+        self.frontier.add(self.Node(source, None))
 
         self.target_embedding = self.model.encode(wikipedia.summary(target, auto_suggest=False))
         self.target_embedding /= np.linalg.norm(self.target_embedding)
@@ -169,13 +169,13 @@ class GreedyBFS(Search):
 
             self.print_node(node)
 
-            if node.state.lower() == target.lower():
+            if node.state == target:
                 return node
             
             links = self.get_heuristics(self.get_all_internal_links(node.state))
 
             for link in links:
-                if link[1].lower() == target.lower():
+                if link[1] == target:
                     return self.Node(link[1], node, link[0])
 
                 if link[1] not in self.explored and not self.frontier.contains_state(link[1]):
@@ -201,7 +201,7 @@ class AStar(GreedyBFS):
         super().__init__(model)
     
     def find_path(self, source, target):
-        self.frontier.add(self.Node(source.title(), None, 0, 1))
+        self.frontier.add(self.Node(source, None, 0, 1))
 
         self.target_embedding = self.model.encode(wikipedia.summary(target, auto_suggest=False))
         self.target_embedding /= np.linalg.norm(self.target_embedding)
@@ -215,13 +215,13 @@ class AStar(GreedyBFS):
 
             self.print_node(node)
 
-            if node.state.lower() == target.lower():
+            if node.state == target:
                 return node
             
             links = self.get_heuristics(self.get_all_internal_links(node.state))
 
             for link in links:
-                if link[1].lower() == target.lower():
+                if link[1] == target:
                     return self.Node(link[1], node, node.depth + 1, link[0])
 
                 if link[1] not in self.explored and not self.frontier.contains_state(link[1]):
